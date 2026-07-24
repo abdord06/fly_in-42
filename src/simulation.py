@@ -1,3 +1,5 @@
+"""Simulation engine that plans and reserves drone routes."""
+
 from typing import Dict, List, Tuple
 from .graph import Map
 from .pathfinder import Pathfinder
@@ -5,17 +7,26 @@ from .reservation import ReservationTable
 
 
 class Simulation:
-    def __init__(self, map_data: Map):
+    """Plan routes for all drones and reserve their movements."""
+
+    def __init__(self, map_data: Map) -> None:
+        """Build the simulation around a parsed map."""
         self.map = map_data
         self.table = ReservationTable()
         self.pathfinder = Pathfinder(self.map, self.table)
-        self.map.start_hub.max_drones = 999999
-        self.map.end_hub.max_drones = 999999
+        if self.map.start_hub is not None:
+            self.map.start_hub.max_drones = 999999
+        if self.map.end_hub is not None:
+            self.map.end_hub.max_drones = 999999
         self.drone_paths: Dict[str, List[Tuple[str, int]]] = {}
 
     def plan_all_routes(self) -> bool:
+        """Compute paths for every drone and reserve them."""
         for i in range(self.map.nb_drones):
             drone_id = f"D{i}"
+
+            if self.map.start_hub is None or self.map.end_hub is None:
+                raise ValueError("start_hub or end_hub is not set.")
 
             path = self.pathfinder.find_path_for_drone(
                 start_zone_name=self.map.start_hub.name,
@@ -34,6 +45,7 @@ class Simulation:
         return True
 
     def _reserve_path_in_table(self, path: List[Tuple[str, int]]) -> None:
+        """Reserve all zones and connections used by a planned path."""
         for i in range(len(path) - 1):
             curr_zone_name, curr_turn = path[i]
             next_zone_name, next_turn = path[i + 1]
@@ -74,6 +86,7 @@ class Simulation:
                 self.table.reserve_zone(next_zone, next_turn)
 
     def run_and_print(self) -> None:
+        """Plan routes and print the turn-by-turn drone movements."""
         if not self.plan_all_routes():
             return
 
@@ -86,7 +99,7 @@ class Simulation:
                 prev_pos = self._get_position_at_turn(path, current_turn - 1)
                 curr_pos = self._get_position_at_turn(path, current_turn)
 
-                if curr_pos and prev_pos and curr_pos != prev_pos:
+                if curr_pos != prev_pos:
                     turn_output.append(f"{drone_id}-{curr_pos}")
 
             if turn_output:
@@ -94,6 +107,7 @@ class Simulation:
 
     def _get_position_at_turn(self, path: List[Tuple[str, int]],
                               target_turn: int) -> str:
+        """Return the zone or connection occupied at a given turn."""
         for zone_name, turn in path:
             if turn == target_turn:
                 return zone_name

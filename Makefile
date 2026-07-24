@@ -14,9 +14,10 @@ debug:
 	$(PYTHON) -m pdb main.py $(MAP)
 
 clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
+	rm -rf __pycache__
+	rm -rf .mypy_cache
+	rm -rf src/__pycache__
+	rm -rf llm_sdk/__pycache__
 
 lint:
 	flake8 .

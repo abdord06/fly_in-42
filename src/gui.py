@@ -1,17 +1,26 @@
+"""Pygame visualization for the simulated drone routes."""
+
 import pygame
 from typing import Dict, List, Tuple
 from .graph import Map
 
 
 class Visualizer:
+    """Render the map and animate drones along their planned paths."""
+
     def __init__(self, map_data: Map,
                  drone_paths: Dict[str, List[Tuple[str, int]]]) -> None:
+        """Store the simulation state and prepare rendering resources."""
         self.map = map_data
         self.paths = drone_paths
 
         self.width = 1024
         self.height = 768
         self.padding = 100
+
+        self.scale: float = 1.0
+        self.offset_x: float = 0.0
+        self.offset_y: float = 0.0
 
         self.colors = {
             'red': (220, 50, 47),
@@ -32,7 +41,7 @@ class Visualizer:
                              self.paths.values()) if self.paths else 0)
         self.current_turn = 0
         self.animation_progress = 0.0
-        self.animation_speed = 0.02
+        self.animation_speed = 0.015
 
         pygame.init()
         pygame.font.init()
@@ -42,6 +51,7 @@ class Visualizer:
         self.font_large = pygame.font.SysFont(None, 36)
 
     def _calculate_scale(self) -> None:
+        """Compute the viewport scale and offsets for the current map."""
         xs = [z.x for z in self.map.zones.values()]
         ys = [z.y for z in self.map.zones.values()]
 
@@ -69,11 +79,13 @@ class Visualizer:
                           self.padding - map_h * self.scale) / 2)
 
     def _get_coords(self, zone_name: str) -> Tuple[int, int]:
+        """Convert a zone name into screen coordinates."""
         z = self.map.zones[zone_name]
         return (int(z.x * self.scale + self.offset_x),
                 int(z.y * self.scale + self.offset_y))
 
     def _get_location_coords(self, loc_name: str) -> Tuple[int, int]:
+        """Return screen coordinates for a zone or connection label."""
         if "-" in loc_name:
             z1_name, z2_name = loc_name.split("-")
             x1, y1 = self._get_coords(z1_name)
@@ -82,6 +94,7 @@ class Visualizer:
         return self._get_coords(loc_name)
 
     def _draw_connections(self, screen: pygame.Surface) -> None:
+        """Draw all connections on the map background."""
         for conn in self.map.connections.values():
             pos1 = self._get_coords(conn.zone1.name)
             pos2 = self._get_coords(conn.zone2.name)
@@ -93,6 +106,7 @@ class Visualizer:
                              thickness)
 
     def _draw_zones(self, screen: pygame.Surface) -> None:
+        """Draw all zones with labels and colors."""
         for zone in self.map.zones.values():
             pos = self._get_coords(zone.name)
 
@@ -100,17 +114,19 @@ class Visualizer:
             if color_name not in self.colors:
                 color_name = 'default'
 
-            pygame.draw.circle(screen, self.colors[color_name], pos, 25)
-            pygame.draw.circle(screen, (0, 0, 0), pos, 25, 2)
+            rayon = 25 if zone.max_drones == 1 else 32
+            pygame.draw.circle(screen, self.colors[color_name], pos, rayon)
+            pygame.draw.circle(screen, (0, 0, 0), pos, rayon, 2)
 
             text = self.font_small.render(zone.name, True, (0, 0, 0))
-            text_rect = text.get_rect(midbottom=(pos[0], pos[1] + 40))
+            text_rect = text.get_rect(midbottom=(pos[0], pos[1] + 45))
 
             screen.blit(text, text_rect)
 
     def _get_drone_pos(self, path: List[Tuple[str, int]],
                        turn: int,
                        progress: float) -> Tuple[int, int]:
+        """Interpolate a drone position for the current frame."""
         start_zone = path[0][0]
         start_turn = path[0][1]
         end_zone = path[0][0]
@@ -143,6 +159,7 @@ class Visualizer:
         return (x, y)
 
     def _draw_drones(self, screen: pygame.Surface) -> None:
+        """Draw all drones at their interpolated positions."""
         for drone_id, path in self.paths.items():
             pos = self._get_drone_pos(path,
                                       self.current_turn,
@@ -157,6 +174,7 @@ class Visualizer:
             screen.blit(img, img_rect)
 
     def run(self) -> None:
+        """Start the interactive visualization loop."""
         screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Fly-in : 42 Drone Simulation")
         clock = pygame.time.Clock()

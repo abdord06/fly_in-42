@@ -1,3 +1,5 @@
+"""Parser for the map description file format."""
+
 import re
 from typing import Dict
 from .models import Zone, Connection, ZoneType
@@ -5,11 +7,15 @@ from .graph import Map
 
 
 class Parser:
+    """Parse a text map description into an in-memory `Map`."""
+
     def __init__(self, filepath: str):
+        """Store the input file path and prepare an empty map."""
         self.filepath = filepath
         self.map = Map()
 
     def parse(self) -> Map:
+        """Read the file and populate the map structure."""
         with open(self.filepath, 'r') as file:
             lines = file.readlines()
 
@@ -39,6 +45,7 @@ class Parser:
         return self.map
 
     def _extract_metadata(self, line: str) -> Dict[str, str]:
+        """Extract optional bracket metadata from a source line."""
         metadata = {}
         match = re.search(r'\[(.*?)\]', line)
         if match:
@@ -52,6 +59,7 @@ class Parser:
         return metadata
 
     def _parse_nb_drones(self, line: str) -> None:
+        """Parse the drone count declaration."""
         parts = line.split(':')
         nb = int(parts[1].strip())
         if nb <= 0:
@@ -59,6 +67,7 @@ class Parser:
         self.map.nb_drones = nb
 
     def _parse_zone(self, line: str) -> None:
+        """Parse a start, end, or regular hub declaration."""
         clean_line = re.sub(r'\[.*?\]', '', line).strip()
         parts = clean_line.split()
 
@@ -95,6 +104,7 @@ class Parser:
         self.map.add_zone(zone)
 
     def _parse_connection(self, line: str) -> None:
+        """Parse a connection declaration between two declared zones."""
         clean_line = re.sub(r'\[.*?\]', '', line).strip()
         parts = clean_line.split()
 
@@ -130,6 +140,7 @@ class Parser:
         self.map.add_connection(conn)
 
     def _validate_map(self) -> None:
+        """Ensure the parsed map contains all required declarations."""
         if self.map.nb_drones == 0:
             raise ValueError("L'fichier map don't have nb_drones.")
         if not self.map.start_hub:

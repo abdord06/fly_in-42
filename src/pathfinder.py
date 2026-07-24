@@ -1,3 +1,5 @@
+"""A* style route planner for drone movement across the map."""
+
 import heapq
 import math
 from typing import List, Tuple, Optional
@@ -7,12 +9,15 @@ from .reservation import ReservationTable
 
 
 class State:
+    """Search state used by the priority queue."""
+
     def __init__(self, cost: float,
                  turn: int,
                  zone_name: str,
                  path: List[Tuple[str, int]],
                  g_score: float = 0.0
                  ) -> None:
+        """Create a search state with path and scoring information."""
         self.cost = cost
         self.turn = turn
         self.zone_name = zone_name
@@ -20,17 +25,23 @@ class State:
         self.g_score = g_score
 
     def __lt__(self, other: 'State') -> bool:
+        """Compare states by heuristic cost, then actual path score."""
         if self.cost == other.cost:
             return self.g_score < other.g_score
         return self.cost < other.cost
 
 
 class Pathfinder:
+    """Compute valid drone paths while respecting reservations
+    and zone rules."""
+
     def __init__(self, map_data: Map, reservation_table: ReservationTable):
+        """Store the map and reservation table used during search."""
         self.map = map_data
         self.table = reservation_table
 
     def _heuristic(self, current_zone: str, target_zone: str) -> float:
+        """Estimate the remaining distance between two zones."""
         current = self.map.zones[current_zone]
         target = self.map.zones[target_zone]
 
@@ -42,6 +53,7 @@ class Pathfinder:
                             end_zone_name: str,
                             start_turn:
                                 int) -> Optional[List[Tuple[str, int]]]:
+        """Find a path from the start zone to the end zone for one drone."""
 
         open_set: List[State] = []
         initial_state = State(0.0,

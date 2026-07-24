@@ -1,3 +1,5 @@
+"""Command-line entry point for the drone routing simulation."""
+
 import sys
 from src.gui import Visualizer
 from src.parser import Parser
@@ -5,6 +7,7 @@ from src.simulation import Simulation
 
 
 def main():
+    """Parse the input map, run the simulation, and launch the visualizer."""
     if len(sys.argv) != 2:
         print("Usage: python main.py <map_file.txt>")
         return

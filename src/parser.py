@@ -142,8 +142,8 @@ class Parser:
     def _validate_map(self) -> None:
         """Ensure the parsed map contains all required declarations."""
         if self.map.nb_drones == 0:
-            raise ValueError("L'fichier map don't have nb_drones.")
+            raise ValueError("fichier map don't have nb_drones.")
         if not self.map.start_hub:
-            raise ValueError("L'fichier map don't have start_hub.")
+            raise ValueError("fichier map don't have start_hub.")
         if not self.map.end_hub:
-            raise ValueError("L'fichier map don't have end_hub.")
+            raise ValueError("fichier map don't have end_hub.")

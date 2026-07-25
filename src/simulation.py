@@ -59,6 +59,7 @@ class Simulation:
             if '-' in curr_zone_name and '-' not in next_zone_name:
                 self.table.reserve_zone(self.map.zones[next_zone_name],
                                         next_turn)
+                continue
 
             if '-' not in curr_zone_name and '-' in next_zone_name:
                 z1, z2 = next_zone_name.split('-')

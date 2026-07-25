@@ -14,7 +14,7 @@ class Visualizer:
         self.map = map_data
         self.paths = drone_paths
 
-        self.width = 1024
+        self.width = 1020
         self.height = 768
         self.padding = 100
 
@@ -165,8 +165,8 @@ class Visualizer:
                                       self.current_turn,
                                       self.animation_progress)
 
-            pygame.draw.circle(screen, self.colors['drone'], pos, 12)
-            pygame.draw.circle(screen, (255, 255, 255), pos, 12, 1)
+            pygame.draw.circle(screen, self.colors['drone'], pos, 14)
+            pygame.draw.circle(screen, (255, 255, 255), pos, 14, 1)
 
             font = pygame.font.SysFont(None, 22)
             img = font.render(drone_id, True, (255, 255, 255))

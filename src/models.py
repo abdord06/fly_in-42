@@ -24,14 +24,7 @@ class Zone:
     zone_type: ZoneType = ZoneType.NORMAL
     max_drones: int = 1
     color: Optional[str] = None
-    current_occupants: int = 0
     connections: List[Tuple[str, str]] = field(default_factory=list)
-
-    def can_enter(self) -> bool:
-        """Return whether the zone can accept another drone."""
-        if self.zone_type == ZoneType.BLOCKED:
-            return False
-        return self.current_occupants < self.max_drones
 
 
 @dataclass
@@ -49,4 +42,3 @@ class Drone:
 
     id: str
     current_location: Zone | Connection
-    turns_remaining: int = 0

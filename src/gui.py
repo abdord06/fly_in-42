@@ -33,7 +33,21 @@ class Visualizer:
             'default': (200, 200, 200),
             'drone': (0, 0, 0),
             'line': (88, 110, 117),
-            'bg': (253, 246, 227)
+            'bg': (253, 246, 227),
+            'purple': (128, 0, 128),
+            'black': (40, 40, 40),
+            'brown': (139, 69, 19),
+            'maroon': (128, 0, 0),
+            'gold': (255, 215, 0),
+            'darkred': (139, 0, 0),
+            'violet': (238, 130, 238),
+            'crimson': (220, 20, 60),
+            'white': (255, 255, 255),
+            'pink': (255, 192, 203),
+            'lime': (50, 205, 50),
+            'teal': (0, 128, 128),
+            'magenta': (255, 0, 255),
+            'silver': (192, 192, 192)   
         }
 
         self._calculate_scale()
@@ -45,7 +59,7 @@ class Visualizer:
         self.animation_progress = 0.0
         self.animation_speed = 0.015
 
-        pygame.init()
+        pygame.display.init()
         pygame.font.init()
 
         self.font_small = pygame.font.SysFont(None, 20)

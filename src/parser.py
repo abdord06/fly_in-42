@@ -88,6 +88,8 @@ class Parser:
             color = metadata['color']
         if 'max_drones' in metadata:
             max_drones = int(metadata['max_drones'])
+            if hub_type not in ["start_hub", "end_hub"] and max_drones <= 0:
+                raise ValueError("max drones in a zone should be > 0")
 
         zone = Zone(name=name, x=x, y=y, zone_type=zone_type,
                     max_drones=max_drones, color=color)
@@ -132,6 +134,8 @@ class Parser:
 
         metadata = self._extract_metadata(line)
         max_capacity = int(metadata.get('max_link_capacity', 1))
+        if max_capacity <= 0:
+            raise ValueError("max_link_capacity should be > 0")
 
         conn = Connection(zone1=self.map.zones[z1_name],
                           zone2=self.map.zones[z2_name],

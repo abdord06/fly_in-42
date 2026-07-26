@@ -14,8 +14,8 @@ class Visualizer:
         self.map = map_data
         self.paths = drone_paths
 
-        self.width = 1020
-        self.height = 768
+        self.width = 1920
+        self.height = 1080
         self.padding = 100
 
         self.scale: float = 1.0
@@ -27,9 +27,11 @@ class Visualizer:
             'green': (133, 153, 0),
             'blue': (38, 139, 210),
             'yellow': (181, 137, 0),
+            'orange': (198, 100, 20),
+            'cyan': (42, 161, 152),
             'gray': (147, 161, 161),
             'default': (200, 200, 200),
-            'drone': (42, 161, 152),
+            'drone': (0, 0, 0),
             'line': (88, 110, 117),
             'bg': (253, 246, 227)
         }

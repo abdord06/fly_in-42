@@ -9,3 +9,9 @@ dependencies = [
     "mypy>=2.3.0",
     "pygame-ce>=2.5.7",
 ]
+
+[tool.mypy]
+exclude = [
+    '^venv/',
+    '^\\.venv/'
+]
